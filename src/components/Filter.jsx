@@ -1,19 +1,23 @@
+import { useDispatch, useSelector } from 'react-redux';
+import css from './PhoneBook.module.css';
+import { setFilter } from 'redux/filterReducer';
 
-import css from "./PhoneBook.module.css"
+export const Filter = () => {
+  const dispatch = useDispatch();
 
-export const Filter = ({ filter, setFilter, contacts }) => {
+  const filter = useSelector(state => state.filter);
 
-  const handleInput = (event) => {
-    setFilter(event.target.value)
-  }
+  const setNewFilter = newFilter => {
+    dispatch(setFilter(newFilter));
+  };
 
   return (
     <input
       className={css.input}
       type="text"
       name="filter"
-      value={filter}
-      onChange={handleInput}
+      value={filter.filter}
+      onChange={event => setNewFilter(event.target.value)}
       // pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
       title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
       placeholder="Search..."

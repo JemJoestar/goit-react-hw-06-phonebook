@@ -1,29 +1,20 @@
-import {  useEffect, useState } from 'react';
 import { PhoneForm } from './PhoneForm';
 import { ContactList } from './ContactList';
 import { nanoid } from 'nanoid';
 import { Filter } from './Filter';
+import { useDispatch, useSelector } from 'react-redux';
+import { addNumber, delNumber } from 'redux/phoneBookReducer';
 
 export const App = () => {
-  const LOCAL_CONTACTS_KEY = 'local-contacts';
 
-  const [contacts, setContacts] = useState(null);
-  const [filter, setFilter] = useState('');
+  const contacts = useSelector(state => state.phoneBook.contacts);
+  const filter = useSelector(state => state.filter.filter);
+
+  const dispatch = useDispatch();
 
   const addConatct = ({ event, name, number }) => {
     event.preventDefault();
-    if (
-      contacts.some(
-        contact => contact.name === name || contact.number === number
-      )
-    ) {
-      alert('This contact alredy exist');
-      return;
-    }
-    setContacts(pervState => [
-      { name: name, number: number, id: nanoid() },
-      ...pervState,
-    ]);
+    dispatch(addNumber({ name: name, number: number, id: nanoid() }));
   };
 
   const getFilteredContacts = filter => {
@@ -38,36 +29,16 @@ export const App = () => {
     }
   };
 
-  const handleDelete =  (id) => {
-    let newContactsArr = [...contacts]
-     setContacts(prevState => {
-      if (contacts.find(contact => contact.id === id)) {
-        newContactsArr.splice(
-          contacts.indexOf(
-            contacts.find(contact => contact.id === id)
-          ),
-          1
-        );
-      }
-      return  newContactsArr;
-    });
+  const handleDelete = id => {
+    dispatch(delNumber(id));
   };
-
-  useEffect(() => {
-    if (contacts === null) {
-      setContacts(JSON.parse(localStorage.getItem(LOCAL_CONTACTS_KEY)) ?? []);
-      return;
-    }
-
-    localStorage.setItem(LOCAL_CONTACTS_KEY, JSON.stringify(contacts));
-  }, [contacts]);
 
   return (
     <>
       <h1>Phonebook</h1>
       <PhoneForm handleAddNumber={addConatct} />
       <h2>Contacts</h2>
-      <Filter filter={filter} setFilter={setFilter} contacts={contacts} />
+      <Filter filter={filter} contacts={contacts} />
       <ContactList
         contacts={getFilteredContacts(filter) ?? []}
         handleDelete={handleDelete}
