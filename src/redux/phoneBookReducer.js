@@ -1,7 +1,7 @@
 const { createSlice } = require('@reduxjs/toolkit');
 
 const INITIAL_STATE = {
-  contacts: null,
+  contacts: [],
 };
 
 const phoneBookSlice = createSlice({
